@@ -1,0 +1,179 @@
+<!--
+Design by Bryant Smith
+http://www.bryantsmith.com
+http://www.aszx.net
+email: templates [-at-] bryantsmith [-dot-] com
+Released under Creative Commons Attribution 2.5 Generic.  In other words, do with it what you please; but please leave the link if you'd be so kind :)
+
+Name       : Transparent Blue
+Version    : 1.0
+Released   : 2009-07-28
+-->
+
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<title>NewsX by QED</title>
+
+
+<style>
+#map_canvas {
+	width: 400px;
+	height: 300px;
+}
+</style>
+<!--   <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script> -->
+<script type="text/javascript"
+	src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+	var marker;
+	var coordinate;
+	var gcd;
+
+	function initialize() {
+		var map_canvas = document.getElementById('map_canvas');
+		var map_options = {
+			minZoom : 1,
+			center : new google.maps.LatLng(44.5403, -78.5463),
+			zoom : 1,
+			maxZoom : 9,
+			mapTypeId : google.maps.MapTypeId.ROADMAP
+		}
+		var map = new google.maps.Map(map_canvas, map_options)
+
+		function getReverseGeocodingData(lat, lng) {
+			var latlng = new google.maps.LatLng(lat, lng);
+			// This is making the Geocode request
+			var geocoder = new google.maps.Geocoder();
+			geocoder.geocode({
+				'latLng' : latlng
+			}, function(results, status) {
+				if (status !== google.maps.GeocoderStatus.OK) {
+					alert(status);
+				}
+				// This is checking to see if the Geoeode Status is OK before proceeding
+				if (status == google.maps.GeocoderStatus.OK) {
+					console.log(results);
+					var address = (results[0].formatted_address);
+					alert('The address is ' + address);
+				}
+			});
+		}
+
+		google.maps.event.addListener(map, 'click', function(event) {
+
+			coordinate = event.latLng;
+			if (marker != null) {
+
+				marker.setPosition(coordinate);
+			}
+
+			else {
+				marker = new google.maps.Marker({
+					position : coordinate,
+					map : map
+				});
+			}
+			alert('You clicked the map at ' + coordinate);
+			//alert('You clicked the latitude '+coordinate.lat());
+			//alert('You clicked the longitude '+coordinate.lng());
+			getReverseGeocodingData(coordinate.lat(), coordinate.lng());
+		});
+	}
+	google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+</head>
+
+<body>
+	<div id="page">
+
+		<div id="header">
+
+			<form method="get" action="#">
+				<table cellpadding="0px" cellspacing="0px"
+					style="border: 2px solid; border-color: white">
+					<tr>
+						<td
+							style="border-style: solid; border-color: white; border-width: 5px;">
+
+
+							<input type="text" name="text_query" value="Your Query Here"
+							style="font-size: 24px; color: #ccc; width: 500px; border: 0px solid; height: 50px; padding: 0px 0px; position: relative;"
+							onblur="if (this.value == '') {this.style.color = '#ccc';this.value = 'Your Query Here' }"
+							onfocus="if (this.value == 'Your Query Here' || this.value == '') {this.style.color = 'black'; this.value = '' }" />
+						</td>
+
+						<td
+							style="border-style: solid; border-color: white; border-width: 5px;">
+							<input type="submit" value=""
+							style="border-style: inherit; background: url('images/myicon_1.jpg'); width: 50px; height: 50px;"
+							onclick="if (text_query.value == 'Your Query Here' || text_query.value.trim() == '') {
+                    return false;
+                } else
+                    text_query.value = text_query.value.trim();
+                return true;" />
+						</td>
+
+					</tr>
+				</table>
+			</form>
+
+			<h1>NewsX</h1>
+		</div>
+		<div class="dotted_line"></div>
+		<div id="main">
+
+			<div class="main_left">
+
+				<h3>Search By Location:</h3>
+
+
+				<!--Embed Bing Map-->
+				<!--
+                    <div>
+                        <iframe width="400" height="300" frameborder="0" src="http://www.bing.com/maps/embed/viewer.aspx?v=3&cp=32.062777~-138.852923&lvl=1&w=400&h=300&sty=h&typ=d&pp=~~24.553369~78.479543&ps=&dir=0&mkt=en-us&form=BMEMJS"></iframe>
+                    </div>    
+                    -->
+
+
+				<!--Embed Google Map-->
+				<div id="map_canvas"></div>
+
+
+			</div>
+
+			<div class="main_right">
+				<ul style="padding-bottom: 50px; list-style: none;">
+					<li style="margin: 0 0 30px 0">
+						<h2>
+							<a href="#"><font color="white">Tsunami in India</font></a>
+						</h2>
+						<p>
+							<font color="white" style="font-size: 16px;">The 2004
+								Indian Ocean earthquake was an undersea megathrust earthquake
+								that occurred at 00:58:53 UTC on Sunday, 26 December 2004, with
+								an epicentre off the west coast of Sumatra, Indonesia. The quake
+								itself is known by the scientific community as the
+								Sumatra–Andaman earthquake.[5][6] The resulting tsunami was
+								given various names, including the 2004 Indian Ocean tsunami,
+								South Asian tsunami, Indonesian tsunami, the Christmas tsunami
+								and the Boxing Day tsunami.</font><a href="#"> Read more..</a>
+						</p>
+					</li>
+				</ul>
+			</div>
+
+			<div class="dotted_line"></div>
+			<div id="footer">
+				<p>
+					<a href="#">About Us</a>
+				</p>
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>
