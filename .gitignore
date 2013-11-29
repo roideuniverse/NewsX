@@ -1,1 +1,8 @@
-/bin
+solr/solr/geolocations/data
+solr/solr/newsx/data
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
