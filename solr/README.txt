@@ -76,3 +76,7 @@ configure logging, edit the log4j.properties file in "resources".
  
 It is also possible to setup log4j or other popular logging frameworks.
 
+
+Deleting all data in Index
+http://localhost:8983/solr/coreName/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E&commit=true
+

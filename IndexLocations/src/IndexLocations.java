@@ -41,6 +41,7 @@ public class IndexLocations {
 			// command line parameter
 			HashMap<String, String> cCode = CountryInfo.load();
 			String file = "/home/roide/Fall2013/IR/3_project/OSM_data/allCountries.txt" ;
+			//String file = "/home/roide/Fall2013/IR/3_project/OSM_data/cities1000.txt" ;
 			FileInputStream fstream = new FileInputStream(file);
 			// Get the object of DataInputStream
 			DataInputStream in = new DataInputStream(fstream);
@@ -51,9 +52,22 @@ public class IndexLocations {
 			while((line=br.readLine()) != null) {
 				//System.out.println("" + line);
 				String[] values = line.split("\t");
+				String featureClass = values[6];
+				//System.out.println(featureClass);
+				if(featureClass.equals("A") || featureClass.equals("P") ) {
+					//do nothing;
+				} else {
+					continue;
+				}
+				//System.out.println("Indexing..");
 				SolrInputDocument doc = new SolrInputDocument();
 				doc.addField("id", id++);
 				doc.addField("name", values[1].trim() );
+				if(featureClass.equals("A") ) {
+					doc.addField("bigregion", values[1].trim() );
+				} else if( featureClass.equals("P") ) {
+					doc.addField("smallregion", values[1].trim() );
+				}
 				doc.addField("text", values[2].trim());
 				
 				String alternate = values[3].trim();
@@ -77,29 +91,13 @@ public class IndexLocations {
 				} else
 					System.out.println("no ");
 
-				//System.out.println("name\t" + values[1]);
-				//System.out.println("ascii\t" + values[2]);
-				//System.out.println("alternate\t" + alternate);
-				//System.out.println("latitude\t" + values[4]);
-				//System.out.println("longitude\t" + values[5]);
-				//System.out.println("country\t" + values[8]);
-				//if( values[1].toLowerCase().matches("patna") ) {
-					//System.out.println("--------found-------");
-					//break;
-				//}
-				//System.out.println("\n");*/
-				//System.out.println(x++);
 				docBuffer.add(doc);
-				if( id%100000 == 0) {
+				if( id%50000 == 0) {
 					server.optimize();
 					UpdateResponse response = server.add(docBuffer);
-					System.out.println("" + (id*100 / 19000000) );
+					System.out.println("" + (id*100 / 1900000) );
 					docBuffer.clear();
 				}
-				
-				//System.out.println("addResponse---" + response);
-				//if( id == 5 )
-					//break;
 			}
 			// Close the input stream
 			in.close();
