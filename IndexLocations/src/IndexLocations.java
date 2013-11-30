@@ -54,7 +54,7 @@ public class IndexLocations {
 				String[] values = line.split("\t");
 				String featureClass = values[6];
 				//System.out.println(featureClass);
-				if(featureClass.equals("A") || featureClass.equals("P") ) {
+				if(featureClass.equals("A") ) {
 					//do nothing;
 				} else {
 					continue;
@@ -92,10 +92,10 @@ public class IndexLocations {
 					System.out.println("no ");
 
 				docBuffer.add(doc);
-				if( id%50000 == 0) {
+				if( id%70000 == 0) {
 					server.optimize();
 					UpdateResponse response = server.add(docBuffer);
-					System.out.println("" + (id*100 / 1900000) );
+					System.out.println("" + (id*100 / 4000000) );
 					docBuffer.clear();
 				}
 			}
