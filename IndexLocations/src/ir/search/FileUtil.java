@@ -15,10 +15,14 @@ import java.util.Properties;
 public class FileUtil {
 	
 	private static final String strPath = "lib/";
-	private static final String strUrl = "http://localhost:8983/solr/newsx";
+	private static String strUrl = "";
 	private static final String strLocationUrl = "http://192.168.2.4:8983/solr/geolocations";
 	private static final String strLatitudeField = "lat";
 	private static final String strLongitudeField= "lon";
+	
+	public static void setSolrUrl(String url) {
+		strUrl = url;
+	}
 			
 	public static String getPath()
 	{
