@@ -12,21 +12,30 @@ public class Main {
 	public static void main(String[] args) {
 		List<WikipediaDocument> docList = null;
 		try {
-			if (args.length < 2) {
+			if (args.length < 4) {
 				printUsage();
 				return;
+			}
+			//--server http://localhost:8983/solr/newsx --dir /home/roide/Fall2013/IR/3_project/temp/extTest
+			String server ="";
+			String dir = "";
+			for(int i=0;i<4; i=i+2) {
+				String input = args[i].trim();
+				if(input.equals("--server")) {
+					server = args[i+1].trim();
+				} else if(input.equals("--dir")) {
+					dir = args[i+1].trim();
+				} else {
+					printUsage();
+					return;
+				}
 			}
 
-			if (!args[0].trim().equals("-i")) {
+			if (dir == null || dir.trim().length() <= 0 || server == null || server.trim().length() <=0 ) {
 				printUsage();
 				return;
 			}
-			String fileName = args[1];
-			if (fileName.trim().length() <= 0) {
-				printUsage();
-				return;
-			}
-			docList = implementparser(fileName);
+			docList = implementparser(dir);
 
 		} catch (Exception e) {
 			System.out.println("Error Message:" + e.getMessage());
@@ -82,8 +91,9 @@ public class Main {
 	}
 
 	private static void printUsage() {
-		System.out
-				.println("Plased enter the path of the directory where the wiki docs has been extracted.");
-		System.out.println("Ex: -i input_dir ");
+		System.out.println("Plased enter the url and path of the directory where the wiki docs has been extracted.");
+		System.out.println("Ex: --server http://localhost:8983/solr/coreName");
+		System.out.println("Ex: --dir wikiDumpExtractedFolder ");
+		System.out.println("Ex: --server http://localhost:8983/solr/coreName --dir wikiDumpExtractedFolder ");
 	}
 }
