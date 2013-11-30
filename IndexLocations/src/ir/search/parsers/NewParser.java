@@ -7,13 +7,9 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import java.util.ArrayList;
-
 import java.util.Collection;
-
 import java.util.List;
-
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -22,9 +18,9 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import org.xml.sax.helpers.DefaultHandler;
 
+import ir.search.LocGoogle;
 import ir.search.LocationFinder;
 import ir.search.QueryParser;
 import ir.search.wikipedia.WikipediaDocument;
@@ -116,6 +112,22 @@ public class NewParser {
     	}
     	return lstLatLong;
     }
+
+	public List<String> findLatLongGoogle(List<String> listLocation) {
+		List<String> lstLatLong=new ArrayList<>();
+    	String address = "";
+    	String loc = "";
+    	try {
+    	   	for(String geoName:listLocation) {
+    	   		loc = LocGoogle.getLatLon(geoName);
+    	   		lstLatLong.add(loc);
+    	   	}
+    	}
+    	catch(Exception e) {
+    		System.out.println("Error in Class:method->WikiPediaParser:findLatLongGoogle:" + e.getMessage());
+    	}
+    	return lstLatLong;
+    }
 	
 	/**
 	 * @author kaushiks
@@ -129,6 +141,7 @@ public class NewParser {
 		private WikipediaDocument mWikiDoc;
 		boolean mDoc = true;
 		private String mText="";
+		private int count = 0;
 
 		XMLParser(Collection<WikipediaDocument> collWikiDoc) {
 			mCollWikiDoc = collWikiDoc;
@@ -136,8 +149,6 @@ public class NewParser {
 
 		public void startElement(String namespaceURI, String localName,
 				String qName, Attributes atts) throws SAXException {
-			List<String> lstLocation = new ArrayList<>();
-			List<String> lstLatLong= new ArrayList<>();
 			//System.out.println("::XMLParser::startElement::" + qName + ":" + atts );
 			if(qName.equalsIgnoreCase(TAG_DOC)) {
 				
@@ -154,15 +165,7 @@ public class NewParser {
 				}
 				String title = atts.getValue("title");
 				if(title != null && title.trim().length() >0 ) {
-					mWikiDoc.setTitle(title);
-					//find location and set to Wiki document
-					lstLocation=findLocation(title);
-					mWikiDoc.setLocation(lstLocation);
-					
-					//find LatLong and set to Wiki document
-					lstLatLong=findLatLong(lstLocation);
-					mWikiDoc.setLatLong(lstLatLong);
-					
+					mWikiDoc.setTitle(title);				
 				}
 				String timestamp = atts.getValue("timestamp");
 				if(timestamp != null && timestamp.trim().length() >0 ) {
@@ -177,40 +180,43 @@ public class NewParser {
 			List<String> lstLatLong= new ArrayList<>();
 			//System.out.println("::XMLParser::EndElement::" + qName + "\n");
 			if(qName.equalsIgnoreCase(TAG_DOC)) {
-				//System.out.println(mText);
 				mWikiDoc.setText(mText);
-				
-				//find location and set to Wiki document
-				//lstLocation=findLocation(mText);
-				//mWikiDoc.setLocation(lstLocation);
-				
-				//find LatLong and set to Wiki document
-				//lstLatLong=findLatLong(lstLocation);
-				//mWikiDoc.setLatLong(lstLatLong);
-				
-				// Add Wiki docs to collection
+
+				lstLocation=findLocation(mWikiDoc.getTitle());
+
+				if(!lstLocation.isEmpty()) {
+					System.out.println(lstLocation);
+					lstLatLong=findLatLongGoogle(lstLocation);
+					mWikiDoc.setLocation(lstLatLong); 
+				} else {
+					lstLocation=findLocation(mText);
+					System.out.println(lstLocation);
+					if(!lstLocation.isEmpty()) {
+						lstLatLong=findLatLongGoogle(lstLocation);
+						mWikiDoc.setLatLong(lstLatLong);
+					} else {
+						System.out.println("Cant find loc for doc: " + mWikiDoc.getTitle() );
+					}
+				}
 				add(mWikiDoc, mCollWikiDoc);
-				
-				
-				// Set all objects to null
 				mDoc = false;
 				mWikiDoc = null;
 				mText = "";
 				
+				count = count + 1;
+				if(count >= 2) {
+					throw new SAXException();
+				}
+				
 			}
 		}
-
 		public void characters(char ch[], int start, int length)
 				throws SAXException {
 			//System.out.println("::XMLParser::characters->" + new String(ch, start, length));
 			if(mDoc) {
 				mText = mText + new String(ch, start, length);
 			}
-
 		}
-		
-		
-		
 	}
 	
 }

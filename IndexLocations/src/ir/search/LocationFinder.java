@@ -14,64 +14,58 @@ import opennlp.tools.tokenize.TokenizerModel;
 import opennlp.tools.util.Span;
 
 public class LocationFinder {
-	
-	public List<String> getLocation(String text)
-	{
-		List<String> lstLocation=new ArrayList<>();
+
+	public List<String> getLocation(String text) {
+		List<String> lstLocation = new ArrayList<>();
 		try {
-			
-			InputStream modelIn = new FileInputStream(FileUtil.getPath()+"en-token.bin");
-			   TokenizerModel tokenModel = new TokenizerModel(modelIn);
-			   modelIn.close();
-			   Tokenizer tokenizer = new TokenizerME(tokenModel);
-			   NameFinderME nameFinder =
-			      new NameFinderME(
-			         new TokenNameFinderModel(new FileInputStream(FileUtil.getPath()+"en-ner-location.bin")));
-			   String tokens[] = tokenizer.tokenize(text);
-			   Span nameSpans[] = nameFinder.find(tokens);
-			   for( int i = 0; i<nameSpans.length; i++) {
-			      //System.out.println("Span: "+nameSpans[i].toString());
-			      //System.out.println("Covered text is: "+tokens[nameSpans[i].getStart()] + " " + tokens[nameSpans[i].getStart()+1]);
-			      if((nameSpans[i].getEnd()-nameSpans[i].getStart())==1)
-			    	  {
-			    	  	lstLocation.add(tokens[nameSpans[i].getStart()]);
-			    	  }
-			      else if((nameSpans[i].getEnd()-nameSpans[i].getStart())==2)
-			      {
-			    	  
-			    	  lstLocation.add(tokens[nameSpans[i].getStart()]+ " "+ tokens[nameSpans[i].getStart()+1]);
-			      }
-			   }
+
+			InputStream modelIn = new FileInputStream(FileUtil.getPath()
+					+ "en-token.bin");
+			TokenizerModel tokenModel = new TokenizerModel(modelIn);
+			modelIn.close();
+			Tokenizer tokenizer = new TokenizerME(tokenModel);
+			NameFinderME nameFinder = new NameFinderME(
+					new TokenNameFinderModel(new FileInputStream(FileUtil
+							.getPath() + "en-ner-location.bin")));
+			String tokens[] = tokenizer.tokenize(text);
+			Span nameSpans[] = nameFinder.find(tokens);
+			for (int i = 0; i < nameSpans.length; i++) {
+				if ((nameSpans[i].getEnd() - nameSpans[i].getStart()) == 1) {
+					String sLocation = tokens[nameSpans[i].getStart()].trim();
+					if(!lstLocation.contains(sLocation)) {
+						lstLocation.add(sLocation);
+					}
+				} else if ((nameSpans[i].getEnd() - nameSpans[i].getStart()) == 2) {
+					String sLocation = tokens[nameSpans[i].getStart()] + " "+ tokens[nameSpans[i].getStart() + 1] ;
+					if(!lstLocation.contains(sLocation)) {
+						lstLocation.add(sLocation);
+					}
+				}
 			}
-			catch(Exception e) {
-			   System.out.println("Error in LocationFinder.getLocation.Message:"+e.getMessage());
-			}
+		} catch (Exception e) {
+			System.out.println("Error in LocationFinder.getLocation.Message:"
+					+ e.getMessage());
+		}
 		return lstLocation;
 	}
-	
+
 	public static void findName() throws IOException {
-		InputStream is = new FileInputStream("/home/rahul/project3/en-ner-person.bin");
- 
+		InputStream is = new FileInputStream(
+				"/home/rahul/project3/en-ner-person.bin");
+
 		TokenNameFinderModel model = new TokenNameFinderModel(is);
 		is.close();
- 
+
 		NameFinderME nameFinder = new NameFinderME(model);
- 
-		String []sentence = new String[]{
-			    "Mike",
-			    "Smith",
-			    "is",
-			    "a",
-			    "good",
-			    "person"
-			    };
- 
-			Span nameSpans[] = nameFinder.find(sentence);
- 
-			for(Span s: nameSpans)
-				System.out.println(s.toString());
- 
+
+		String[] sentence = new String[] { "Mike", "Smith", "is", "a", "good",
+				"person" };
+
+		Span nameSpans[] = nameFinder.find(sentence);
+
+		for (Span s : nameSpans)
+			System.out.println(s.toString());
+
 	}
 
-	
 }
