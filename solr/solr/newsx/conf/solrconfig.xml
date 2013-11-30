@@ -22,12 +22,29 @@
 -->
 <config>
   <luceneMatchVersion>4.5</luceneMatchVersion>
+  
+  <lib dir="../../contrib/extraction/lib" regex=".*\.jar" />
+  <lib dir="../../dist/" regex="solr-cell-\d.*\.jar" />
+
+  <lib dir="../../contrib/clustering/lib/" regex=".*\.jar" />
+  <lib dir="../../dist/" regex="solr-clustering-\d.*\.jar" />
+
+  <lib dir="../../contrib/langid/lib/" regex=".*\.jar" />
+  <lib dir="../../dist/" regex="solr-langid-\d.*\.jar" />
+
+  <lib dir="../../contrib/velocity/lib" regex=".*\.jar" />
+  <lib dir="../../dist/" regex="solr-velocity-\d.*\.jar" />
+  
   <!--  The DirectoryFactory to use for indexes.
         solr.StandardDirectoryFactory, the default, is filesystem based.
         solr.RAMDirectoryFactory is memory based, not persistent, and doesn't work with replication. -->
-  <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
-
   <dataDir>${solr.core1.data.dir:}</dataDir>
+  
+    <directoryFactory name="DirectoryFactory" 
+                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/> 
+
+  <codecFactory class="solr.SchemaCodecFactory"/>
+  <lockType>${solr.lock.type:native}</lockType>
 
   <!-- To enable dynamic schema REST APIs, use the following for <schemaFactory>:
   
@@ -71,6 +88,45 @@
   <requestDispatcher handleSelect="true" >
     <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" formdataUploadLimitInKB="2048" />
   </requestDispatcher>
+  
+      <!-- Declare a clustering search component, configure a single engine (Lingo algorithm) -->
+  <searchComponent name="clustering" enable="true" class="solr.clustering.ClusteringComponent" >
+    <lst name="engine">
+      <str name="name">default</str>
+      <str name="carrot.algorithm">org.carrot2.clustering.lingo.LingoClusteringAlgorithm</str>
+
+      <str name="LingoClusteringAlgorithm.desiredClusterCountBase">20</str>
+      <str name="carrot.lexicalResourcesDir">clustering/carrot2</str>
+      <str name="MultilingualClustering.defaultLanguage">ENGLISH</str>
+    </lst>
+  </searchComponent>
+  
+    <requestHandler name="/config1_1" class="solr.SearchHandler">
+    <lst name="defaults">
+      <str name="defType">edismax</str>
+      <str name="qf">
+        title^1.5 text^1.0
+      </str>
+      <str name="rows">30</str>
+      <str name="fl">*,score</str>
+
+      <!-- Enable clustering. -->
+      <bool name="clustering">true</bool>          <!-- enable clustering -->
+      <bool name="clustering.results">true</bool>  <!-- cluster search results, not the collection -->
+      <str name="clustering.engine">default</str> <!-- use the default engine -->
+
+      <!-- Solr-to-Carrot2 field mapping. -->
+      <str  name="carrot.url">id</str>           <!-- unique ID field, doesn't have to be an URL -->
+      <str  name="carrot.title">name</str>        <!-- document title field. -->
+      <str  name="carrot.snippet">text</str>    <!-- document "contents" field -->
+    </lst>
+
+    <!-- Attach clustering as the last processing component. -->
+    <arr name="last-components">
+      <str>clustering</str>
+    </arr>
+  </requestHandler>
+  
   
   <requestHandler name="standard" class="solr.StandardRequestHandler" default="true" />
   <requestHandler name="/analysis/field" startup="lazy" class="solr.FieldAnalysisRequestHandler" />
