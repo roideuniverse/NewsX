@@ -37,4 +37,4 @@ else
 	echo "...extracting..."
 	bzcat $wikidumpFile | python WikiExtractor.py -o "$wikiDumpExtractedFolder" -N "$2"
 fi
-#java -jar newsindexer.jar --server $serverurl --dir $wikiDumpExtractedFolder
+java -jar newsindexer.jar --server $serverurl --dir $wikiDumpExtractedFolder
