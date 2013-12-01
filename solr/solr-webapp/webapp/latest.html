@@ -1,0 +1,268 @@
+
+
+
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <title>NewsX by QED</title>
+
+
+        <style>
+            #map_canvas {
+                width: 400px;
+                height: 300px;
+            }
+        </style>
+        <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script> 
+        <script type="text/javascript">
+        
+                var marker;
+                var coordinate;
+                var  gcd;
+                var lat=null,lng=null;
+                
+                function initialize() {
+                var map_canvas = document.getElementById('map_canvas');
+                var map_options = {
+                    minZoom: 1,
+                    center: new google.maps.LatLng(44.5403, -78.5463),
+                    zoom: 1,
+                    maxZoom: 9,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                }
+                var map = new google.maps.Map(map_canvas, map_options)
+                
+                function getReverseGeocodingData(lat, lng) {
+    var latlng = new google.maps.LatLng(lat, lng);
+    // This is making the Geocode request
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+        if (status !== google.maps.GeocoderStatus.OK) {
+            alert(status);
+        }
+        // This is checking to see if the Geoeode Status is OK before proceeding
+        if (status == google.maps.GeocoderStatus.OK) {
+            console.log(results);
+            var address = (results[0].formatted_address);
+            alert('The address is '+address);
+            //document.SearchBar.address.value=address;
+        }
+    });
+}
+                
+            google.maps.event.addListener(map, 'click', function(event) {
+                
+                        coordinate=event.latLng;
+                        if (marker!=null) 
+                        {
+                            
+                            marker.setPosition(coordinate);
+                        }
+
+                         else
+                        {
+                            marker = new google.maps.Marker({
+                            position: coordinate,
+                            map: map
+                            });
+                        }
+                //alert('You clicked the map at '+coordinate);
+                //alert('You clicked the latitude '+coordinate.lat());
+                //alert('You clicked the longitude '+coordinate.lng());
+                getReverseGeocodingData(coordinate.lat(), coordinate.lng());
+                lat=coordinate.lat();
+                lng=coordinate.lng();
+                //document.SearchBar.lat.value=lat;
+                //document.SearchBar.lng.value=lng;
+                //alert('The Lat/Long is '+lat+"/"+lng);
+            }); 
+            }
+                
+            google.maps.event.addDomListener(window, 'load', initialize);
+
+
+
+
+function xmlhttpPost(strURL) {
+    
+    
+    var xmlHttpReq = false;
+    var self = this;
+    if (window.XMLHttpRequest) { // Mozilla/Safari
+        self.xmlHttpReq = new XMLHttpRequest(); 
+    }
+    else if (window.ActiveXObject) { // IE
+        self.xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    self.xmlHttpReq.open('POST', strURL, true);
+    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    self.xmlHttpReq.onreadystatechange = function() {
+        if (self.xmlHttpReq.readyState == 4) {
+            updatepage(self.xmlHttpReq.responseText);
+        }
+    }
+
+    var params = getstandardargs().concat(getquerystring());
+    var strData = params.join('&');
+    
+    alert('strData: '+strData);
+    self.xmlHttpReq.send(strData);
+}
+
+function getstandardargs() {
+    var params = [
+        'wt=json'
+        , 'indent=on'
+        , 'hl=true'
+	, 'sfield=newslocation'
+	, 'pt='+lat+','+lng
+	, 'sort=geodist() asc, score desc, timestamp desc'
+	, 'rows=1000000'
+	, 'hl.fl=newslocation,title,doc_text,timestamp,url,score'
+        ];
+
+
+                 
+    return params;
+}
+function getquerystring() {
+  var form = document.forms['SearchBar'];
+  var query = form.query.value;
+  qstr = 'q=title_exact:' + escape(query)+'^7 doc_text_exact:'+escape(query)+'^6 title:'+escape(query)+'^5 doc_text:'+escape(query)+'^4 title_simplified:'+escape(query)+'^3 doc_text_simplified:'+escape(query)+'^2 wordNGram:'+escape(query);
+  return qstr;
+}
+
+// this function does all the work of parsing the solr response and updating the page.
+function updatepage(str){
+  var i=0;
+
+
+
+  //document.getElementById("raw").innerHTML = str;
+  var rsp = eval("("+str+")"); // use eval to parse Solr's JSON response
+
+  //alert('result: '+rsp);
+  console.log('response= '+str);
+  var html="";
+  
+  var j=0;
+ var first=null;
+
+
+  i=rsp.response.numFound;
+  if(i>0)
+  {
+   
+  
+  for(j;j<i;j++)
+	{
+  first = rsp.response.docs[j];
+
+
+                   
+
+                            
+
+
+  html +=  "<li style=\" margin: 0 0 30px 0\"><h2><a href=\"#\"><font color=\"white\">"+ first.title+"</font></a></h2>";
+  html += "<p><font color=\"black\" style=\"font-size:16px; \">"+ first.doc_text+"</font><a href=\""+first.url+"\" target=\""+first.title+"\"> Read more..</a></p></li>";
+  
+  
+
+	}
+  }
+  else{html= "<li style=\" margin: 0 0 30px 0\"><h2><font color=\"black\">No Result Found</font></h2></li>";}
+
+  document.getElementById("result").innerHTML = html;
+
+}
+
+
+            
+            
+        </script>
+
+    </head>
+
+    <body>
+        <div id="page">
+
+            <div id="header">
+
+                <form name ="SearchBar" onsubmit=' xmlhttpPost("/solr/newsx/select"); return false;'> 
+                    <table cellpadding="0px" cellspacing="0px" style="border:2px solid; border-color: white"> 
+                        <tr> 
+                            <td style="border-style:solid;border-color:white;border-width:5px;">
+
+
+                                <input type="hidden" name="default_text" value="1"> 
+                                <input type="text"  name="query" value="Your Query Here" style=" color:#ccc; font-size: 24px;width:500px; border:0px solid; height:50px; padding:0px 0px; position:relative;"     onblur="if (this.value.trim() === '') {this.style.color = '#ccc';this.value = 'Your Query Here'; default_text.value='1';}" onfocus="if (default_text.value==='1' || this.value.trim() === '') {this.style.color = 'black'; this.value = '' ;default_text.value='0'}"/>
+
+                                
+                                <input type="hidden" name="lng" > 
+                                <input type="hidden" name="address" > 
+
+                            </td>
+
+                            <td style="border-style:solid;border-color:white;border-width:5px;"> 
+                                <input type="submit" value="" style="border-style: inherit; background: url('images/myicon_1.jpg') ; width: 50px; height: 50px;" 
+                                       onclick="if (default_text.value === '1' || query.value.trim() === '') 
+                                    {                     
+                                        return false;               
+                                
+                                    } 
+                                    else    query.value = query.value.trim();
+                
+                            return true;"/>
+                            
+                            </td>
+
+                        </tr>
+                    </table>
+                </form>
+
+                <h1>NewsX</h1>
+            </div>
+            <div class="dotted_line"></div>
+            <div id="main">
+
+                <div class="main_left">
+
+                    <h3>Search By Location:</h3>
+
+                    
+                    <!--Embed Bing Map-->
+                    <!--
+                    <div>
+                        <iframe width="400" height="300" frameborder="0" src="http://www.bing.com/maps/embed/viewer.aspx?v=3&cp=32.062777~-138.852923&lvl=1&w=400&h=300&sty=h&typ=d&pp=~~24.553369~78.479543&ps=&dir=0&mkt=en-us&form=BMEMJS"></iframe>
+                    </div>    
+                    -->
+                    
+                    
+                    <!--Embed Google Map-->
+                    <div id="map_canvas"></div>
+                    
+
+                </div>
+
+                <div  class="main_right" style="height:680px; overflow:auto;">
+                    <ul id="result" style=" padding-bottom: 50px;  list-style: none;">
+                    </ul>
+                </div>
+
+
+                <div class="dotted_line"></div>
+                <div id="footer">
+                    <p>
+                        <a href="#">About Us</a></p>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>
+
