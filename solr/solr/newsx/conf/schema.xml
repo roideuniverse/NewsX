@@ -124,7 +124,7 @@
    <field name="popularity" type="int" indexed="true" stored="true" />
    <field name="inStock" type="boolean" indexed="true" stored="true" />
 
-   <field name="store" type="location" indexed="true" stored="true" multiValued="true"/>
+   <field name="newslocation" type="location" indexed="true" stored="true" multiValued="true"/>
 
    <!-- Common metadata fields, named specifically to match up with
      SolrCell metadata when parsing rich documents such as Word, PDF.
@@ -146,11 +146,6 @@
    <field name="content_type" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="last_modified" type="date" indexed="true" stored="true"/>
    <field name="links" type="string" indexed="true" stored="true" multiValued="true"/>
-
-
-
-
-
    <field name="doc_text" type="text_general" indexed="true" stored="true" multiValued="true"/>
    <field name="position" type="location" indexed="true" stored="true" />
    <field name="timestamp" type="date" indexed="true" stored="true" default="1999-09-09T14:31:53Z" multiValued="false"/>
