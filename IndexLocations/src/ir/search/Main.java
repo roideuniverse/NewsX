@@ -93,8 +93,8 @@ public class Main {
 
 	private static void printUsage() {
 		System.out.println("Plased enter the url and path of the directory where the wiki docs has been extracted.");
-		System.out.println("Ex: --server http://localhost:8983/solr/coreName");
-		System.out.println("Ex: --dir wikiDumpExtractedFolder ");
-		System.out.println("Ex: --server http://localhost:8983/solr/coreName --dir wikiDumpExtractedFolder ");
+		System.out.println("usage: --server http://localhost:8983/solr/coreName");
+		System.out.println("usage: --dir wikiDumpExtractedFolder ");
+		System.out.println("usage: java -jar newsindexer.jar --server http://localhost:8983/solr/coreName --dir wikiDumpExtractedFolder ");
 	}
 }
