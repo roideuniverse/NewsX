@@ -658,7 +658,7 @@ def main():
     file_size = 500 * 1024
     output_dir = '.'
     
-    print opts
+    #print opts
 
     for opt, arg in opts:
         if opt in ('-h', '--help'):
