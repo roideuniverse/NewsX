@@ -1,5 +1,6 @@
 solr/solr/geolocations/data
 solr/solr/newsx/data
+solr/logs
 *.class
 
 # Package Files #
