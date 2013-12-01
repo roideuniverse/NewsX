@@ -33,6 +33,7 @@ public class NewParser {
 	/* */
 	
 	static long startTime =0;
+	static int mCount = 0;
 	
 	/* TODO: Implement this method */
 	/**
@@ -141,7 +142,6 @@ public class NewParser {
 		private WikipediaDocument mWikiDoc;
 		boolean mDoc = true;
 		private String mText="";
-		private int count = 0;
 
 		XMLParser(Collection<WikipediaDocument> collWikiDoc) {
 			mCollWikiDoc = collWikiDoc;
@@ -203,8 +203,8 @@ public class NewParser {
 				mWikiDoc = null;
 				mText = "";
 				
-				count = count + 1;
-				if(count >= 2) {
+				mCount = mCount + 1;
+				if(mCount >= 3) {
 					throw new SAXException();
 				}
 				
