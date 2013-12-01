@@ -31,5 +31,9 @@ elif [ -f $wikidumpFile ];
 then
 	echo "extracting..."
 	bzcat $wikidumpFile | python WikiExtractor.py -o $wikiDumpExtractedFolder
+else
+	wget $wikidumpFileLink
+	echo "extracting..."
+	bzcat $wikidumpFile | python WikiExtractor.py -o $wikiDumpExtractedFolder
 fi
 java -jar newsindexer.jar --server $serverurl --dir $wikiDumpExtractedFolder
