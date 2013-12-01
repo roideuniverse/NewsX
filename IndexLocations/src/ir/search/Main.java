@@ -23,6 +23,7 @@ public class Main {
 				String input = args[i].trim();
 				if(input.equals("--server")) {
 					server = args[i+1].trim();
+					FileUtil.setSolrUrl(server);
 				} else if(input.equals("--dir")) {
 					dir = args[i+1].trim();
 				} else {
