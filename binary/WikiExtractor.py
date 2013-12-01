@@ -43,6 +43,7 @@ Usage:
   WikiExtractor.py [options]
 
 Options:
+  -N  --NoOfDocsToExtract= n[docs_to_extract] : The max no of documents to extract from dump
   -c, --compress        : compress output files using bzip
   -b, --bytes= n[KM]    : put specified bytes per output file (default 500K)
   -B, --base= URL       : base URL for the Wikipedia pages
@@ -117,6 +118,10 @@ version = '2.5'
 ##### Main function ###########################################################
 
 def WikiDocument(out, id, title,timestamp, text):
+    global noOfDocsExtracted, noOfDocsToExtract
+    noOfDocsExtracted = noOfDocsExtracted + 1
+    #print noOfDocsExtracted
+    #print noOfDocsToExtract
     url = get_url(id, prefix)
     header = '<doc id="%s" url="%s" title="%s" timestamp="%s">\n' % (id, url, title, timestamp)
     # Separate header from text with a newline.
@@ -559,7 +564,7 @@ class OutputSplitter:
 tagRE = re.compile(r'(.*?)<(/?\w+)[^>]*>(?:([^<]*)(<.*?>)?)?')
 
 def process_data(input, output):
-    global prefix
+    global prefix, noOfDocsExtracted, noOfDocsToExtract
 
     page = []
     id = None
@@ -608,6 +613,13 @@ def process_data(input, output):
                 print id, title.encode('utf-8')
                 sys.stdout.flush()
                 WikiDocument(output, id, title, timestamp, ''.join(page))
+                #print type(noOfDocsExtracted)
+                #print type(noOfDocsToExtract)
+                if noOfDocsExtracted >= noOfDocsToExtract:
+			#print "time to break"
+			break
+		#else:
+			#print "not yet"
             id = None
             page = []
         elif tag == 'base':
@@ -630,12 +642,14 @@ def show_usage(script_name):
 minFileSize = 200 * 1024
 
 def main():
-    global keepLinks, keepSections, prefix, acceptedNamespaces
+    global keepLinks, keepSections, prefix, acceptedNamespaces, noOfDocsToExtract, noOfDocsExtracted
+    noOfDocsExtracted = 0
+    noOfDocsToExtract = 5
     script_name = os.path.basename(sys.argv[0])
 
     try:
-        long_opts = ['help', 'compress', 'bytes=', 'basename=', 'links', 'ns=', 'sections', 'output=', 'version']
-        opts, args = getopt.gnu_getopt(sys.argv[1:], 'cb:hln:o:B:sv', long_opts)
+        long_opts = ['help', 'compress', 'bytes=', 'basename=', 'links', 'ns=', 'sections', 'output=', 'version', 'NoOfDocsToExtract=']
+        opts, args = getopt.gnu_getopt(sys.argv[1:], 'cb:hln:o:B:N:sv', long_opts)
     except getopt.GetoptError:
         show_usage(script_name)
         sys.exit(1)
@@ -643,6 +657,8 @@ def main():
     compress = False
     file_size = 500 * 1024
     output_dir = '.'
+    
+    print opts
 
     for opt, arg in opts:
         if opt in ('-h', '--help'):
@@ -654,6 +670,8 @@ def main():
             keepLinks = True
         elif opt in ('-s', '--sections'):
             keepSections = True
+        elif opt in ('-N', '--NoOfDocsToExtract'):
+            noOfDocsToExtract = int(arg)
         elif opt in ('-B', '--base'):
             prefix = arg
         elif opt in ('-b', '--bytes'):
