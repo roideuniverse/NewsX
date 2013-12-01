@@ -153,11 +153,13 @@
    <field name="doc_text_exact" type="text_exact" indexed="true" stored="true" multiValued="true"/>
    <field name="title_simplified" type="text_simplified" indexed="true" stored="true" multiValued="true"/>
    <field name="title_exact" type="text_exact" indexed="true" stored="true" multiValued="true"/>
+   <field name="wordNGram" type="ngram"  indexed="true" stored="true" multiValued="true"/>
    
    <copyField source="doc_text" dest="doc_text_simplified"/>
    <copyField source="doc_text" dest="doc_text_exact"/>
    <copyField source="title" dest="title_simplified"/>
    <copyField source="title" dest="title_exact"/>
+   <copyField source="doc_text" dest="wordNGram"/>
 
 
 
@@ -318,6 +320,18 @@
          Class names starting with "solr" refer to java classes in a
        standard package such as org.apache.solr.analysis
     -->
+    <fieldtype name="ngram" stored="false" indexed="true"
+		class="solr.TextField">
+		<analyzer>
+		<tokenizer class="solr.KeywordTokenizerFactory"/>
+		<filter class="solr.LowerCaseFilterFactory"/>
+		<filter class="solr.NGramFilterFactory"	minGramSize="3" maxGramSize="10"/>
+		</analyzer>
+    </fieldtype>
+
+
+
+
 
     <!-- The StrField type is not analyzed, but indexed/stored verbatim.
        It supports doc values but in that case the field needs to be
