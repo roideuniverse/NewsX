@@ -20,22 +20,24 @@
         <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script> 
         <script type="text/javascript">
         
+        
                 var marker;
                 var coordinate;
                 var  gcd;
-                var lat=null,lng=null;
+                var lat=43.003706,lng=-78.787429;
                 
                 function initialize() {
                 var map_canvas = document.getElementById('map_canvas');
                 var map_options = {
                     minZoom: 1,
-                    center: new google.maps.LatLng(44.5403, -78.5463),
-                    zoom: 1,
+                    center: new google.maps.LatLng(43.003706, -78.787429),
+                    zoom: 9,
                     maxZoom: 9,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 }
                 var map = new google.maps.Map(map_canvas, map_options)
                 
+               
                 function getReverseGeocodingData(lat, lng) {
     var latlng = new google.maps.LatLng(lat, lng);
     // This is making the Geocode request
@@ -70,7 +72,7 @@
                             map: map
                             });
                         }
-                //alert('You clicked the map at '+coordinate);
+                alert('Coordinate= '+coordinate);
                 //alert('You clicked the latitude '+coordinate.lat());
                 //alert('You clicked the longitude '+coordinate.lng());
                 getReverseGeocodingData(coordinate.lat(), coordinate.lng());
@@ -168,7 +170,7 @@ function updatepage(str){
                             
 
 
-  html +=  "<li style=\" margin: 0 0 30px 0\"><h2><a href=\"#\"><font color=\"white\">"+ first.title+"</font></a></h2>";
+  html +=  "<li style=\" margin: 0 0 30px 0\"><h2><a href=\""+first.url+"\"target=\""+first.title+"\"><font color=\"black\">"+ first.title+"</font></a></h2>";
   html += "<p><font color=\"black\" style=\"font-size:16px; \">"+ first.doc_text+"</font><a href=\""+first.url+"\" target=\""+first.title+"\"> Read more..</a></p></li>";
   
   
@@ -200,11 +202,10 @@ function updatepage(str){
 
 
                                 <input type="hidden" name="default_text" value="1"> 
-                                <input type="text"  name="query" value="Your Query Here" style=" color:#ccc; font-size: 24px;width:500px; border:0px solid; height:50px; padding:0px 0px; position:relative;"     onblur="if (this.value.trim() === '') {this.style.color = '#ccc';this.value = 'Your Query Here'; default_text.value='1';}" onfocus="if (default_text.value==='1' || this.value.trim() === '') {this.style.color = 'black'; this.value = '' ;default_text.value='0'}"/>
+                                <input type="text"  name="query" value="Your Query Here" style=" color:#ccc; font-size: 24px;width:500px; border:1px solid; height:50px; padding:0px 0px; position:relative;"     onblur="if (this.value.trim() === '') {this.style.color = '#ccc';this.value = 'Your Query Here'; default_text.value='1';}" onfocus="if (default_text.value==='1' || this.value.trim() === '') {this.style.color = 'black'; this.value = '' ;default_text.value='0'}"/>
 
                                 
-                                <input type="hidden" name="lng" > 
-                                <input type="hidden" name="address" > 
+                               
 
                             </td>
 
