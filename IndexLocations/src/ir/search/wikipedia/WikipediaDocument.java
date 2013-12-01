@@ -35,6 +35,8 @@ public class WikipediaDocument {
 	private int id;
 	@Field
 	private String title;
+	
+	@Field("url")
 	private String wikilink;
 	@Field("doc_text")
 	private String text;
@@ -42,7 +44,7 @@ public class WikipediaDocument {
 	@Field("place")
 	private List<String> lstLocation ;
 	
-	@Field("store")
+	@Field("newslocation")
 	private List<String> lstLatLong ;
 	
 	public WikipediaDocument() {

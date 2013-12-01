@@ -203,11 +203,6 @@ public class NewParser {
 				mWikiDoc = null;
 				mText = "";
 				
-				mCount = mCount + 1;
-				if(mCount >= 3) {
-					throw new SAXException();
-				}
-				
 			}
 		}
 		public void characters(char ch[], int start, int length)
