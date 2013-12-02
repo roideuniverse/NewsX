@@ -89,6 +89,14 @@
     <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" formdataUploadLimitInKB="2048" />
   </requestDispatcher>
   
+    <requestHandler name="/select" class="solr.SearchHandler">
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+       <int name="rows">20</int>
+       <str name="df">doc_text</str>
+     </lst>
+   </requestHandler>
+  
       <!-- Declare a clustering search component, configure a single engine (Lingo algorithm) -->
   <searchComponent name="clustering" enable="true" class="solr.clustering.ClusteringComponent" >
     <lst name="engine">
